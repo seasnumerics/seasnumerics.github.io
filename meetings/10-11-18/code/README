@@ -1,0 +1,103 @@
+Kalman filter applied to the Chua oscillator
+Numerics journal club, Nov 11, 2018 - by Chris H. Rycroft
+=========================================================
+The Kalman filter is method for data assimilation and uncertainty
+quantification. Suppose you have a system that you have model for, but you
+only receive incomplete and/or noisy observations of the system at certain
+times. The Kalman filter provides a systematic way to track the mean and
+variance of the model variables over time, incorporating the observations
+to
+
+These programs demonstrate the Kalman filter applied to the Chua oscillator.
+The Chua oscillator is an example of a chaotic ODE system but it is not as
+well known as others, such as the Lorenz and Rössler attractors. It was
+originally described by Chua when searching for a simple electronic circuit
+to demonstrate chaos. After non-dimensionalization, the Chua oscillator
+is given by
+
+dx/dt = alpha*(y-f(x)),
+dy/dt = x-y+z,
+dz/dt = -beta*y.
+
+In Chua's original work f(x) was a piecewise linear function, but Hirsch,
+Smale, and Devaney (2003) proposed that the continuous function
+
+f(x) = x/6 - x^3 / 16
+
+captures the essential behavior.
+
+These notes are based on several online resources:
+
+Wikipedia page on the Kalman filter:
+https://en.wikipedia.org/wiki/Kalman_filter
+
+Wikipedia page on the extended Kalman filter for a nonlinear continuous model
+with discrete observations:
+https://en.wikipedia.org/wiki/Extended_Kalman_filter
+
+A nice writeup about the Kalman filter:
+https://www.bzarg.com/p/how-a-kalman-filter-works-in-pictures/
+
+Chua oscillator:
+http://www.scholarpedia.org/article/Chua_circuit
+
+chua.py
+=======
+This program simulates the Chua ODE system and outputs the results to
+a text file 'chua_sol.dat'. In the standard (x,y,z) variables the Chua
+oscillator is slanted. For plotting purposes it is useful to rotate into
+a new set of axes, using the SVD. This program saves the axes for later
+use.
+
+To run, type "./chua.py". After this, the results can be visualized in Gnuplot
+using the (x,y,z) axes with
+
+splot 'chua_sol.dat' u 2:3:4 w l
+
+and with the new axes using
+
+splot 'chua_sol.dat' u 2:3:4 w l
+
+movie.pl / c_template.pov
+=========================
+This Perl script takes the output from chua.py and renders a 3D visualization
+of it using POV-Ray. The c_template.pov provides a POV-Ray template for the
+scene, setting up the lighting and camera angle. The script creates movie
+frames by adding the solution trace to the template and rendering. The frames
+are stored into 'chua_frames'.
+
+chua2.py
+========
+This program demonstrates the Kalman filter applied to the Chua oscillator.
+It first constructs a reference solution to the Chua oscillator (saved to
+'ref_sol.dat') and then simulates data points by applying noise to the
+reference solution (saved to 'samp_pts.dat'). The Kalman filter is then run,
+tracking the mean and variance in the solution over time, incorporating the
+available data.
+
+In Gnuplot, the output over the initial range can be examined using
+
+set xrange [0:50]
+plot 'ref_sol.dat' u 1:2 w l t 'Reference', 'samp_pts.dat' u 1:2 w p t 'Data points', 'kal_sol.dat' u 1:2 w l t 'Kalman mean'
+
+The output over the whole range can be examined using
+
+set xrange [0:200]
+replot
+
+Over the whole range, some periods are visible where the Kalman mean
+substantially deviates from the reference solution, but it tends to recover
+after some time.
+
+chua3.py
+========
+This program demonstrates how the Kalman filter can be used to estimate
+parameters in the model itself. Here, the state consists of
+(x,y,z,alpha,beta), but only (x,y,z) are observed. The Kalman filter
+is able to recover the values of alpha and beta with high accuracy.
+
+In Gnuplot, the output over the initial range (also showing the errors in
+alpha and beta) can be examined using
+
+set xrange [0:50]
+plot 'ref_sol.dat' u 1:2 w l t 'Reference', 'samp_pts.dat' u 1:2 w p t 'Data points', 'kal_sol.dat' u 1:2 w l t 'Kalman mean', '' u 1:(($5-14)*5) 'alpha error x5', '' u 1:(($6-10)*5) 'beta error x5' 
