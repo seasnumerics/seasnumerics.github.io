@@ -1,0 +1,21 @@
+Lattice Boltzmann File Listing
+==================================
+
+lattice.hh - Header for the lattice class which stores relevant particle distribution function
+			 information and macroscopic quantities at a grid point, and implements the collide
+			 and stream functions.
+
+lattice.cc - Defines the functions relevant to the lattice class.
+
+lbm.hh - Header for lbm class which sets up a simulation grid of pointers to lattice objects,
+		 and solves the Boltzmann transport equation forward in time.
+
+lbm.cc - Defines the functions relevant to the lbm class.
+
+models.cc - Defines different flow initializations.
+
+lbm_params.hh - Sets fluid parameters such as Reynolds number and relaxation constant.
+
+lbm_test.cc - Top-level script to simulate a fluid system with the lattice Boltzmann method.
+
+lbm_plot.py - Python script to plot speed, density, and vorticity from output files.

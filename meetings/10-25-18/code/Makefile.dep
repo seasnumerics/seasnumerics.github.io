@@ -1,0 +1,4 @@
+lbm.o: lbm.cc lbm.hh common.hh lbm_params.hh lattice.hh
+models.o: models.cc lbm.hh common.hh lbm_params.hh lattice.hh
+lattice.o: lattice.cc lattice.hh
+common.o: common.cc common.hh
